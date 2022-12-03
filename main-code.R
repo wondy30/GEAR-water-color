@@ -1,11 +1,15 @@
 library(tidyverse)
 library(lubridate)
 
-dataset1 <- read_csv("dataset/site9991799.csv")
+#Data was downloaded in two batches, so read the batches
+dataset1 <- read_csv("dataset/site1998.csv")
+dataset2 <- read_csv("dataset/GEAR-points2-HLSL30-020-results.csv")
 
-#import the second dataset and combine it here first
+#combine
+dataset <- dataset1 %>% 
+  bind_rows(dataset2)
 
-
+#read the metadata for the lakes, sampling location
 metaData <- read_csv("dataset/locations_metadata.txt")
 
 #Add lake name to the reluctance data
@@ -16,12 +20,28 @@ metaData <- metaData %>%
 fidLakeName <- metaData %>% 
   select(FID, Lake_name) 
 
-dataset1 <- left_join(dataset1, fidLakeName, by=c("ID"="FID"))
+dataset <- left_join(dataset, fidLakeName, by=c("ID"="FID"))
 
 #aggregate to annual average
-dataset1$Date <- mdy(dataset1$Date)
-dataset1$Year <- year(dataset1$Date)
+#dataset$Date <- mdy(dataset1$Date) #Not required as the data column read in date format 
+
+#dataset$Year <- year(dataset$Date)  #this can be done later
 
 #Decided to calculate color DW first and then aggregate per year annual
+
+dataset <- dataset %>% 
+  filter(HLSL30_020_B01 > 0, HLSL30_020_B02 > 0, HLSL30_020_B03 > 0, HLSL30_020_B04 > 0) #drop all negative reflectance values
+
+summary(dataset)
+
+dim(dataset)
+
+#Run XYZ calculation, dominant wavelength using Lehman equation
+
+
+
+
+
+
 
 
