@@ -348,8 +348,8 @@ windows()
 theme_set(theme_bw())     #classic dark-on-light theme
 ggplot() +
   geom_sf(data=world) +
-  #geom_text(data = world, aes(label = admin), size = 5) +
-  geom_point(data=modalColorMeta, size=4, aes(x=Pour_long, y=Pour_lat, color=modalDwLehmann)) +
+  #geom_text(data = world, aes(label = admin), size = 4) +
+  geom_point(data=modalColorMeta, size=5, aes(x=Pour_long, y=Pour_lat, color=modalDwLehmann)) +
   scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "Modal color") +
   coord_sf(xlim = c(25, 45), ylim = c(-20, 20), expand = FALSE)
 
