@@ -124,7 +124,7 @@ cleanData %>%
     panel.background = element_blank())
 
 #--------------------------------------##----------------------------------------#
-#Calculate model color by lake
+#Calculate modal color by lake
 ##let us round the dw to the nearst 5
 
 cleanData$dwLehmann <- round(cleanData$dwLehmann,0)
@@ -353,4 +353,49 @@ ggplot() +
   scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "Modal color") +
   coord_sf(xlim = c(25, 45), ylim = c(-20, 20), expand = FALSE)
 
+#-------------------------------------##---------------------------------#
+#median, sd, I think the getmode function has flaw
 
+MedianSdData <- cleanData %>% 
+  group_by(Lake_name) %>% 
+  summarise(medianDwLehmann=median(dwLehmann), sdDwLehmann=std(dwLehmann))
+summary(MedianSdData)
+#scatter plot
+windows()
+MedianSdData %>% 
+  ggplot(aes(x = medianDwLehmann, y = sdDwLehmann)) +
+  geom_point(size = 6, aes(color = medianDwLehmann)) +
+  xlim(490, 590) +
+  ylim(0, 40) +
+  scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "Median color") +
+  #geom_smooth(alpha = 0.7, method = "loess") +
+  labs(
+    x = "Median color (nm)",
+    y = "Temporal color standard deviation (nm)",
+    title = "Median color variation for each lake"
+    #shape = "Reservoir"
+  ) +
+  theme_bw() +
+  theme(axis.text=element_text(size=11),
+        axis.title=element_text(size=14),
+        axis.title.x = element_text(vjust=-0.5),
+        axis.title.y = element_text(vjust=1.5),
+        legend.text=element_text(size=11),
+        legend.title=element_text(size=14)) 
+
+#on a map
+meta <- read_csv("dataset/modalColorMetaData.csv")
+
+medianColorMeta <- left_join(MedianSdData, meta, by="Lake_name")
+world <- ne_countries(scale = "medium", returnclass = "sf")   #pull country data and choose the scale
+class(world)
+
+windows()
+theme_set(theme_bw())     #classic dark-on-light theme
+ggplot() +
+  geom_sf(data=world) +
+  #geom_text(data = world, aes(label = admin), size = 4) +
+  geom_point(data=medianColorMeta, size=5, aes(x=Pour_long, y=Pour_lat, color=medianDwLehmann)) +
+  scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "Median color") +
+  coord_sf(xlim = c(25, 45), ylim = c(-20, 20), expand = FALSE) +
+  xlab("Longitude") + ylab("Latitude")
