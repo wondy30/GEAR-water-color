@@ -399,3 +399,5 @@ ggplot() +
   scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "Median color") +
   coord_sf(xlim = c(25, 45), ylim = c(-20, 20), expand = FALSE) +
   xlab("Longitude") + ylab("Latitude")
+
+
