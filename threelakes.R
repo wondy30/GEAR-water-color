@@ -51,6 +51,7 @@ lakes3Data <- lakes3Data %>%
   group_by(ID, Year) %>% 
   mutate(meanDwLehmann = mean(dwLehmann)) %>% 
   distinct(ID, Year, .keep_all=TRUE)
+
 #density plot
 d <- density(lakes3Data$meanDwLehmann)
 
@@ -72,23 +73,13 @@ mode_to_label <- bind_rows(max_mode, min_mode)
 windows()
 lakes3Data %>%
   ggplot() +
-  geom_vline(data = mode_to_label, aes(xintercept = x), color = "darkgrey") +
-  ggridges::stat_density_ridges(geom = "density_ridges_gradient", aes(x = meanDwLehmann, y = 0, fill = stat(x)), color = NA, show.legend = F, bandwidth = 3, scale = 1) + 
+  ggridges::stat_density_ridges(geom = "density_ridges_gradient", aes(x = meanDwLehmann, y = 0, fill = stat(x)), color = NA, show.legend = F, bandwidth = 3, scale = 1, ) + 
   scale_fill_gradientn(limits = c(450, 600), colours = dw2FUI(450:600), na.value='#FFFFFF00') +
-  facet_wrap(~Category) + 
+  facet_wrap(~Category, ncol=1) + 
   scale_x_continuous(breaks = seq(470, 600, by = 30), limits = c(470, 599)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)), labels = scales::percent_format(accuracy = 1)) +
-  labs(x = "Dominant color wavelength (nm)", y = "Density") +
-  theme_bw() +
-  theme(strip.text = element_text(size = 12),
-        plot.margin = unit(x = c(0, 0.05, 0, 0.05), units = "in"),
-        text = element_text(size = 12),
-        axis.text.x = element_text(angle = 0),
-        axis.ticks.y = element_blank(),
-        axis.title = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        panel.background = element_blank())
+  labs(x = "Dominant wavelength (nm)", y = "Density") +
+  theme_bw()
 
 #create map
 library("sf")
@@ -126,7 +117,7 @@ ggplot() +
 ggplot() +
   geom_sf(data=world, fill = "white") +
   #geom_text(data = world, aes(label = admin), size = 4) +
-  geom_point(data=tanga, size=5, aes(x=Longitude, y=Latitude, color=dwLehmann)) +
+  geom_point(data=tanga, size=4, aes(x=Longitude, y=Latitude, color=dwLehmann)) +
   scale_color_gradientn(limits = c(472, 588), colours = dw2FUI(472:588), na.value='#FFFFFF00', name = "DW (nm)") +
   coord_sf(xlim = c(29.0, 31.3), ylim = c(-8.9, -3.2), expand = FALSE) +
   xlab("Longitude") + ylab("Latitude")
